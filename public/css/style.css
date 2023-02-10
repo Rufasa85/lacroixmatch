@@ -19,7 +19,7 @@ main {
     margin:0 auto;
 }
 
-.authForm {
+.authForm{
     display: flex;
     flex-direction: column;
     width:50%;
@@ -28,6 +28,8 @@ main {
     border-radius: 10px;
     box-shadow:5px 5px 10px 15px black;
 }
+
+
 
 .authForm > * {
     width: 75%;
@@ -41,4 +43,19 @@ main {
 .signupcan-img:hover {
     opacity: 0.5;
     cursor: pointer;
+}
+
+.profile-can-img {
+    border:1px solid black;
+    width: 200px;
+}
+
+.hide {
+    display: none !important;
+}
+
+#edit-profile {
+    display: flex;
+    flex-direction: column;
+    width: 20%;
 }

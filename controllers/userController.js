@@ -51,7 +51,7 @@ router.post("/", async (req, res) => {
       password: req.body.password,
       bio: req.body.bio,
     });
-    await userObj.addLove(req.body.loveIds)
+    await userObj.addLove(req.body.loveIds)                                                                                               
     await userObj.addHate(req.body.hateIds)
     req.session.userId = userObj.id;
     req.session.userData = {
@@ -70,6 +70,30 @@ router.post("/", async (req, res) => {
       });
     }
 });
+
+router.put("/editprofile",(req,res)=>{
+  if(!req.session.loggedIn){
+    return res.status(403).json({msg:"login first knuckleheads"})
+  }
+  User.update({
+    username:req.body.username,
+    bio:req.body.bio
+  },{
+    where:{
+      id:req.session.userId
+    }
+  }).then(edited=>{
+    res.json({
+      msg:"edit complete!"
+    })
+  }).catch(err=>{
+    console.log(err)
+    res.status(500).json({
+      msg:"uh oh spagettiohs!",
+      err
+    })
+  })
+})
 //login route
 router.post("/login", (req, res) => {
   User.findOne({

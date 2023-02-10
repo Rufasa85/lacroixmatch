@@ -1,0 +1,57 @@
+{{#if isMyProfile}}
+  <div class="profile-data">
+    <h1>{{user.username}}'s page</h1>
+    <p>{{user.bio}}</p>
+    <button id="show-edit-form">Edit</button>
+  </div>
+  <form class="hide" id="edit-profile">
+    <input type="text" id="editUsername" value="{{user.username}}" />
+    <textarea id="editBio">{{user.bio}}</textarea>
+    <button>Save Changes</button>
+  </form>
+  <h2>Loves (click to remove)</h2>
+{{else}}
+  <h1>{{user.username}}'s page</h1>
+  <p>{{user.bio}}</p>
+   <h2>Loves</h2>
+{{/if}}
+
+
+{{#if isMyProfile}}
+<form id="profile-add-love">
+    <select id="profile-add-love-select">
+        {{#each flavors}}
+        <option value="{{id}}">{{name}}</option>
+        {{/each}}
+    </select>
+    <button>Add Love</button>
+</form>
+
+{{/if}}
+<section class="profileLoves">
+  {{#each user.Love}}
+  {{#if ../isMyProfile}}
+    <img class="profile-can-img editable-can"data-feeling="love" data-flavor-id="{{id}}" src="{{pic}}" alt="{{name}}">
+    {{else}}
+    <img class="profile-can-img" src="{{pic}}" alt="{{name}}"
+  {{/if}}
+     />
+  {{/each}}
+</section>
+{{#if isMyProfile}}
+<h2>Hates (click to remove)</h2>
+{{else}}
+<h2>Hates</h2>
+{{/if}}
+<section class="profileHates">
+  {{#each user.Hate}}
+  {{#if ../isMyProfile}}
+    <img class="profile-can-img editable-can" data-feeling="hate" data-flavor-id="{{id}}" src="{{pic}}" alt="{{name}}">
+    {{else}}
+    <img class="profile-can-img" src="{{pic}}" alt="{{name}}"
+  {{/if}}
+  {{/each}}
+</section>
+{{#if isMyProfile}}
+    <script src="/js/editProfile.js"></script>
+{{/if}}

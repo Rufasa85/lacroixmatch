@@ -13,7 +13,7 @@
         {{!-- TODO: add  dynamic navigation--}}
         <a href="/">Home</a>
         {{#if isLoggedIn}}
-            <a href="/profile">profile</a>
+            <a href="/user/{{userId}}">profile</a>
             <button id="logoutBtn">Log me out!</button>
             <script src="/js/logout.js"></script>
         {{else}}
