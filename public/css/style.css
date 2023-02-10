@@ -1,0 +1,44 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+header,footer {
+    height: 15vh;
+    display: flex;
+    justify-content: space-around;
+    background:salmon
+}
+
+main {
+    min-height: 70vh;
+    background:slategray;
+    width:80vw;
+    margin:0 auto;
+}
+
+.authForm {
+    display: flex;
+    flex-direction: column;
+    width:50%;
+    margin:0 auto;
+    background:white;
+    border-radius: 10px;
+    box-shadow:5px 5px 10px 15px black;
+}
+
+.authForm > * {
+    width: 75%;
+    margin:20px auto;
+}
+
+.signupcan-img {
+    border:1px solid black;
+    width:50px;
+}
+.signupcan-img:hover {
+    opacity: 0.5;
+    cursor: pointer;
+}

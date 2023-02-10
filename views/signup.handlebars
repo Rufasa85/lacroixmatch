@@ -1,0 +1,28 @@
+<h1>Signup page</h1>
+<form id="signupForm" class="authForm">
+    <input type="text" placeholder="email" id="signupEmail">
+    <input type="text" placeholder="username" id="signupUsername">
+    <input type="password"id="signupPassword">
+    <textarea placeholder="bio..." id="signupBio"></textarea>
+    <label for="lovedFlavors">Loves (click to remove)</label>
+    <section id="loveBox"></section>
+    <select id="lovedFlavors">
+       {{#each flavors}}
+       <option value="{{id}}" data-pic="{{pic}}">{{name}}</option>
+       {{/each}} 
+    </select>
+    <button type="button" id="addLove">Add love</button>
+    <label for="hatedFlavors">Hates (clickToRemove)</label>
+    <section id="hateBox"></section>
+    <select id="hatedFlavors">
+{{#each flavors}}
+  <option value="{{id}}" data-pic="{{pic}}">{{name}}</option>
+{{/each}}
+    </select>
+     <button type="button" id="addHate">Add hate</button>
+    <button>Signup</button>
+</form>
+
+
+
+<script src="/js/signup.js"></script>

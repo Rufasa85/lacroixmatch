@@ -42,29 +42,33 @@ router.get("/:id", (req, res) => {
     });
 });
 //signup route
-router.post("/", (req, res) => {
-  User.create({
-    username: req.body.username,
-    email: req.body.email,
-    password: req.body.password,
-    bio: req.body.bio,
-  })
-    .then((userObj) => {
-      req.session.userId = userObj.id;
-      req.session.userData = {
-        username: userObj.username,
-        email: userObj.email,
-      };
-      req.session.loggedIn = true;
-      res.json(userObj);
-    })
-    .catch((err) => {
+router.post("/", async (req, res) => {
+  try{
+
+    const userObj = await User.create({
+      username: req.body.username,
+      email: req.body.email,
+      password: req.body.password,
+      bio: req.body.bio,
+    });
+    await userObj.addLove(req.body.loveIds)
+    await userObj.addHate(req.body.hateIds)
+    req.session.userId = userObj.id;
+    req.session.userData = {
+      username: userObj.username,
+      email: userObj.email,
+    };
+    req.session.loggedIn = true;
+    res.json(userObj);
+  }
+
+  catch(err) {
       console.log(err);
       res.status(500).json({
         msg: "whoopsie daisy",
         err,
       });
-    });
+    }
 });
 //login route
 router.post("/login", (req, res) => {
@@ -98,67 +102,67 @@ router.post("/login", (req, res) => {
       });
     });
 });
-
+router.delete("/logout", (req, res) => {
+  req.session.destroy();
+  res.send("logged out!");
+});
 //love route protecc
 router.post("/addlove/:flavorId", async (req, res) => {
-    try {
-
-        if (!req.session.loggedIn) {
-            return res.status(403).json({ msg: "login first you knucklehead" });
-        }
-        const userObj = await User.findByPk(req.session.userId);
-        await userObj.addLove(req.params.flavorId);
-        return res.json({ msg: "flavor added to loves!" });
-    } catch(err){
-        console.log(err);
-        res.status(500).json({msg:"flavor added already"})
+  try {
+    if (!req.session.loggedIn) {
+      return res.status(403).json({ msg: "login first you knucklehead" });
     }
+    const userObj = await User.findByPk(req.session.userId);
+    await userObj.addLove(req.params.flavorId);
+    return res.json({ msg: "flavor added to loves!" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ msg: "flavor added already" });
+  }
 });
 
 //unLove route protecc
 router.delete("/removelove/:flavorId", async (req, res) => {
-    try {
-        if (!req.session.loggedIn) {
-            return res.status(403).json({ msg: "login first you knucklehead" });
-        }
-        const userObj = await User.findByPk(req.session.userId);
-        await userObj.removeLove(req.params.flavorId);
-        return res.json({ msg: "flavor removed to loves!" });
-    } catch(err){
-        console.log(err);
-        res.status(500).json({msg:"flavor removed already"})
+  try {
+    if (!req.session.loggedIn) {
+      return res.status(403).json({ msg: "login first you knucklehead" });
     }
+    const userObj = await User.findByPk(req.session.userId);
+    await userObj.removeLove(req.params.flavorId);
+    return res.json({ msg: "flavor removed to loves!" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ msg: "flavor removed already" });
+  }
 });
 //hate route protecc
 router.post("/addhate/:flavorId", async (req, res) => {
-    try {
-
-        if (!req.session.loggedIn) {
-            return res.status(403).json({ msg: "login first you knucklehead" });
-        }
-        const userObj = await User.findByPk(req.session.userId);
-        await userObj.addHate(req.params.flavorId);
-        return res.json({ msg: "flavor added to hates!" });
-    } catch(err){
-        console.log(err);
-        res.status(500).json({msg:"flavor added already"})
+  try {
+    if (!req.session.loggedIn) {
+      return res.status(403).json({ msg: "login first you knucklehead" });
     }
+    const userObj = await User.findByPk(req.session.userId);
+    await userObj.addHate(req.params.flavorId);
+    return res.json({ msg: "flavor added to hates!" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ msg: "flavor added already" });
+  }
 });
 
 //un route protecc
 router.delete("/removehate/:flavorId", async (req, res) => {
-    try {
-        if (!req.session.loggedIn) {
-            return res.status(403).json({ msg: "login first you knucklehead" });
-        }
-        const userObj = await User.findByPk(req.session.userId);
-        await userObj.removeHate(req.params.flavorId);
-        return res.json({ msg: "flavor removed to hates!" });
-    } catch(err){
-        console.log(err);
-        res.status(500).json({msg:"flavor removed already"})
+  try {
+    if (!req.session.loggedIn) {
+      return res.status(403).json({ msg: "login first you knucklehead" });
     }
+    const userObj = await User.findByPk(req.session.userId);
+    await userObj.removeHate(req.params.flavorId);
+    return res.json({ msg: "flavor removed to hates!" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ msg: "flavor removed already" });
+  }
 });
-
 
 module.exports = router;
