@@ -28,13 +28,21 @@ const seed = async ()=>{
         individualHooks:true
     })
     const flavors = await Flavor.bulkCreate(flavorSeeds);
-    await flavors[3].addUser(2);
-    await users[0].addFlavors([2,3,6,7])
-    await users[0].removeFlavor(3);
+    await flavors[3].addLovedBy(2);
+    await users[0].addLove([2,3,6,7])
+    await users[0].removeLove(3);
+
+    await users[0].addHate([29,13,1])
     const finalresult = await User.findByPk(1,{
-        include:[Flavor]
+        include:[{
+            model:Flavor,
+            as:"Love"
+        },{
+            model:Flavor,
+            as:"Hate"
+        }]
     })
-    console.log(await finalresult.countFlavors())
+    console.log(finalresult.toJSON())
     process.exit(1)
 }
 
