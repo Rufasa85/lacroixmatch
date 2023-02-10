@@ -16,7 +16,70 @@ router.get("/", (req, res) => {
       });
     });
 });
+router.get("/matchpercent/:matchId", async (req, res) => {
+  if (!req.session.loggedIn) {
+    return res.status(401).json({ msg: "login to view comaptability!" });
+  }
+  const myProfile = await User.findByPk(req.session.userId, {
+    include: [
+      {
+        model: Flavor,
+        as: "Love",
+      },
+      {
+        model: Flavor,
+        as: "Hate",
+      },
+    ],
+  });
+  const matchProfile = await User.findByPk(req.params.matchId, {
+    include: [
+      {
+        model: Flavor,
+        as: "Love",
+      },
+      {
+        model: Flavor,
+        as: "Hate",
+      },
+    ],
+  });
+  const myLikeIds = myProfile.Love.map(loveObj=>loveObj.id);
+  const matchLikeIds = matchProfile.Love.map(loveObj=>loveObj.id);
+  const sharedLikes = [];
+  myLikeIds.forEach(like=>{
+    if(matchLikeIds.includes(like)){
+      if(!sharedLikes.includes(like))
+      sharedLikes.push(like)
+    }
+  })
+  const myDislikeIds = myProfile.Hate.map(hateObj=>hateObj.id);
+  const matchDislikeIds = matchProfile.Hate.map(hateObj=>hateObj.id);
+  const sharedDislikes = [];
+  myDislikeIds.forEach(dislike=>{
+    if(matchDislikeIds.includes(dislike)){
+      if(!sharedDislikes.includes(dislike))
+      sharedDislikes.push(dislike)
+    }
+  })
+  const sharedLikePercentage = (sharedLikes.length/myLikeIds.length) *100
+  const sharedDislikePercentage = (sharedDislikes.length/myDislikeIds.length) *100
+ const totalCompat = ((sharedLikes.length + sharedDislikes.length)/(myLikeIds.length + myDislikeIds.length))*100
 
+ //TODO: add a weighted percentage if =match hates a flavor you love 
+  res.json({
+    myLikeIds,
+    matchLikeIds,
+    sharedLikes,
+    sharedLikePercentage,
+    myDislikeIds,
+    matchDislikeIds,
+    sharedDislikes,
+    sharedDislikePercentage,
+    totalCompat
+  })
+
+});
 router.get("/:id", (req, res) => {
   User.findByPk(req.params.id, {
     include: [
@@ -43,16 +106,15 @@ router.get("/:id", (req, res) => {
 });
 //signup route
 router.post("/", async (req, res) => {
-  try{
-
+  try {
     const userObj = await User.create({
       username: req.body.username,
       email: req.body.email,
       password: req.body.password,
       bio: req.body.bio,
     });
-    await userObj.addLove(req.body.loveIds)                                                                                               
-    await userObj.addHate(req.body.hateIds)
+    await userObj.addLove(req.body.loveIds);
+    await userObj.addHate(req.body.hateIds);
     req.session.userId = userObj.id;
     req.session.userData = {
       username: userObj.username,
@@ -60,40 +122,43 @@ router.post("/", async (req, res) => {
     };
     req.session.loggedIn = true;
     res.json(userObj);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      msg: "whoopsie daisy",
+      err,
+    });
   }
-
-  catch(err) {
-      console.log(err);
-      res.status(500).json({
-        msg: "whoopsie daisy",
-        err,
-      });
-    }
 });
 
-router.put("/editprofile",(req,res)=>{
-  if(!req.session.loggedIn){
-    return res.status(403).json({msg:"login first knuckleheads"})
+router.put("/editprofile", (req, res) => {
+  if (!req.session.loggedIn) {
+    return res.status(403).json({ msg: "login first knuckleheads" });
   }
-  User.update({
-    username:req.body.username,
-    bio:req.body.bio
-  },{
-    where:{
-      id:req.session.userId
+  User.update(
+    {
+      username: req.body.username,
+      bio: req.body.bio,
+    },
+    {
+      where: {
+        id: req.session.userId,
+      },
     }
-  }).then(edited=>{
-    res.json({
-      msg:"edit complete!"
+  )
+    .then((edited) => {
+      res.json({
+        msg: "edit complete!",
+      });
     })
-  }).catch(err=>{
-    console.log(err)
-    res.status(500).json({
-      msg:"uh oh spagettiohs!",
-      err
-    })
-  })
-})
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        msg: "uh oh spagettiohs!",
+        err,
+      });
+    });
+});
 //login route
 router.post("/login", (req, res) => {
   User.findOne({
@@ -174,7 +239,7 @@ router.post("/addhate/:flavorId", async (req, res) => {
   }
 });
 
-//un route protecc
+//unHate route protecc
 router.delete("/removehate/:flavorId", async (req, res) => {
   try {
     if (!req.session.loggedIn) {

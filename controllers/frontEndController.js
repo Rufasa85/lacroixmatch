@@ -37,9 +37,7 @@ router.get("/signup",(req,res)=>{
 //TODO: profile page
 
 router.get("/user/:id",async (req,res)=>{
-    try {
-
-    
+    try {  
    const userData = await User.findByPk(req.params.id,{
         include:[
             {
