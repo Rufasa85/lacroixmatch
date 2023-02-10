@@ -28,7 +28,13 @@ const seed = async ()=>{
         individualHooks:true
     })
     const flavors = await Flavor.bulkCreate(flavorSeeds);
-
+    await flavors[3].addUser(2);
+    await users[0].addFlavors([2,3,6,7])
+    await users[0].removeFlavor(3);
+    const finalresult = await User.findByPk(1,{
+        include:[Flavor]
+    })
+    console.log(await finalresult.countFlavors())
     process.exit(1)
 }
 
